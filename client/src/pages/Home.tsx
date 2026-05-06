@@ -219,41 +219,51 @@ export default function Home() {
             )}
           </div>
 
-          <div className="space-y-3">
-            {tracks.map((track, index) => (
-              <div
-                key={track.id}
-                className={`group p-4 rounded-lg border transition-all duration-300 ${
-                  currentTrack === index
-                    ? "border-cyan-500 bg-cyan-500/10"
-                    : "border-cyan-500/20 hover:border-cyan-500/50 bg-slate-900/30 hover:bg-slate-900/50"
-                }`}
-              >
-                <div className="flex items-center justify-between">
-                  <div className="flex items-center gap-4">
-                    <span className="text-cyan-400 font-bold text-lg w-8">{String(index + 1).padStart(2, "0")}</span>
-                    <div>
-                      <h3 className={`text-lg font-semibold transition-colors ${
-                        currentTrack === index ? "text-cyan-300" : "text-slate-100 group-hover:text-cyan-300"
-                      }`}>
-                        {track.title}
-                      </h3>
+          <div className="grid gap-8 lg:grid-cols-[320px_minmax(0,1fr)] items-start">
+            <div className="sticky top-24 self-start rounded-3xl overflow-hidden border border-cyan-500/20 bg-slate-950/80 shadow-xl shadow-cyan-500/10">
+              <img
+                src="/Capa-Album-Ecos-da-Alma.jpg"
+                alt="Capa do álbum Ecos da Alma"
+                className="w-full h-full object-cover"
+              />
+            </div>
+
+            <div className="space-y-3">
+              {tracks.map((track, index) => (
+                <div
+                  key={track.id}
+                  className={`group p-4 rounded-lg border transition-all duration-300 ${
+                    currentTrack === index
+                      ? "border-cyan-500 bg-cyan-500/10"
+                      : "border-cyan-500/20 hover:border-cyan-500/50 bg-slate-900/30 hover:bg-slate-900/50"
+                  }`}
+                >
+                  <div className="flex items-center justify-between">
+                    <div className="flex items-center gap-4">
+                      <span className="text-cyan-400 font-bold text-lg w-8">{String(index + 1).padStart(2, "0")}</span>
+                      <div>
+                        <h3 className={`text-lg font-semibold transition-colors ${
+                          currentTrack === index ? "text-cyan-300" : "text-slate-100 group-hover:text-cyan-300"
+                        }`}>
+                          {track.title}
+                        </h3>
+                      </div>
+                    </div>
+                    <div className="flex items-center gap-2">
+                      <span className="text-slate-400 text-sm">{track.duration}</span>
+                      <Button
+                        size="sm"
+                        variant="ghost"
+                        onClick={() => playTrack(index)}
+                        className="text-cyan-400 hover:text-cyan-300 hover:bg-cyan-500/10"
+                      >
+                        <Play className="h-4 w-4" />
+                      </Button>
                     </div>
                   </div>
-                  <div className="flex items-center gap-2">
-                    <span className="text-slate-400 text-sm">{track.duration}</span>
-                    <Button
-                      size="sm"
-                      variant="ghost"
-                      onClick={() => playTrack(index)}
-                      className="text-cyan-400 hover:text-cyan-300 hover:bg-cyan-500/10"
-                    >
-                      <Play className="h-4 w-4" />
-                    </Button>
-                  </div>
                 </div>
-              </div>
-            ))}
+              ))}
+            </div>
           </div>
         </div>
       </section>
