@@ -6,16 +6,16 @@ import { toast } from "sonner";
 
 // Dados das faixas do álbum
 const tracks = [
-  { id: 1, title: "Alma de Vidro", duration: "3:45", filename: "Alma-de-Vidro.mp3" },
-  { id: 2, title: "Coração em Espera", duration: "4:12", filename: "Coração-em-Espera.mp3" },
-  { id: 3, title: "Deixa Falar", duration: "3:28", filename: "Deixa-Falar.mp3" },
-  { id: 4, title: "Nossa Canção (44 Anos)", duration: "3:56", filename: "Nossa-Canção-(44-Anos).mp3" },
-  { id: 5, title: "O Futuro Começa Agora", duration: "4:03", filename: "O-Futuro-Começa-Agora.mp3" },
-  { id: 6, title: "Ritmo da Redenção", duration: "3:34", filename: "Ritmo-da-Redenção.mp3" },
-  { id: 7, title: "Velas Acesas", duration: "4:18", filename: "Velas-Acesas.mp3" },
-  { id: 8, title: "O Abrigo de Papel", duration: "3:52", filename: "O-Abrigo-de-Papel.mp3" },
-  { id: 9, title: "O Som do Silêncio Entre Nós", duration: "4:41", filename: "O-Som-do-Silêncio-Entre-Nós.mp3" },
-  { id: 10, title: "O Que Resta de Mim", duration: "3:59", filename: "O-Que-Resta-de-Mim.mp3" },
+  { id: 1, title: "Alma de Vidro", duration: "3:19" },
+  { id: 2, title: "Coração em Espera", duration: "4:51" },
+  { id: 3, title: "Deixa Falar", duration: "3:44" },
+  { id: 4, title: "Nossa Canção (44 Anos)", duration: "1:57" },
+  { id: 5, title: "O Futuro Começa Agora", duration: "3:37" },
+  { id: 6, title: "Ritmo da Redenção", duration: "3:45" },
+  { id: 7, title: "Velas Acesas", duration: "4:14" },
+  { id: 8, title: "O Abrigo de Papel", duration: "2:43" },
+  { id: 9, title: "O Som do Silêncio Entre Nós", duration: "3:22" },
+  { id: 10, title: "O Que Resta de Mim", duration: "4:12" },
 ];
 
 const streamingLinks = [
