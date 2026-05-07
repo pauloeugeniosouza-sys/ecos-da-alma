@@ -1,8 +1,9 @@
 import { Button } from "@/components/ui/button";
-import { Mail, Music, Share2, Play, Pause } from "lucide-react";
-import { useState, useRef } from "react";
+import { Mail, Music, Share2, Play, Pause, Globe } from "lucide-react";
+import { useState, useRef, useEffect } from "react";
 import { trpc } from "@/lib/trpc";
 import { toast } from "sonner";
+import { translations, Language } from "@/lib/translations";
 
 // Dados das faixas do álbum
 const tracks = [
@@ -24,8 +25,9 @@ const streamingLinks = [
   { name: "Deezer", url: "https://www.deezer.com" },
 ];
 
-function ApprovedMemoriesSection() {
+function ApprovedMemoriesSection({ language }: { language: Language }) {
   const { data: memoriesData } = trpc.memories.getApproved.useQuery();
+  const t = translations[language];
 
   if (!memoriesData?.memories || memoriesData.memories.length === 0) {
     return null;
@@ -33,7 +35,7 @@ function ApprovedMemoriesSection() {
 
   return (
     <div className="mt-12 pt-12 border-t border-slate-800">
-      <h3 className="text-2xl font-bold text-cyan-300 mb-6">Memórias que Ressoam</h3>
+      <h3 className="text-2xl font-bold text-cyan-300 mb-6">{t.memoriesThatResonate}</h3>
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
         {memoriesData.memories.slice(0, 4).map((mem) => (
           <div
@@ -55,7 +57,23 @@ export default function Home() {
   const [submitted, setSubmitted] = useState(false);
   const [currentTrack, setCurrentTrack] = useState<number | null>(null);
   const [isPlaying, setIsPlaying] = useState(false);
+  const [language, setLanguage] = useState<Language>('pt');
   const audioRef = useRef<HTMLAudioElement>(null);
+  const t = translations[language];
+
+  // Initialize language from localStorage
+  useEffect(() => {
+    const savedLanguage = localStorage.getItem('language') as Language | null;
+    if (savedLanguage && (savedLanguage === 'pt' || savedLanguage === 'en')) {
+      setLanguage(savedLanguage);
+    }
+  }, []);
+
+  // Save language to localStorage
+  const handleLanguageChange = (lang: Language) => {
+    setLanguage(lang);
+    localStorage.setItem('language', lang);
+  };
 
   const newsletterMutation = trpc.newsletter.subscribe.useMutation({
     onSuccess: (data) => {
@@ -65,7 +83,7 @@ export default function Home() {
       setTimeout(() => setSubmitted(false), 3000);
     },
     onError: (error) => {
-      toast.error(error.message || "Erro ao subscrever. Tenta novamente.");
+      toast.error(error.message || t.errorSubscribe);
     },
   });
 
@@ -75,7 +93,7 @@ export default function Home() {
       setMemory("");
     },
     onError: (error) => {
-      toast.error(error.message || "Erro ao partilhar memória. Tenta novamente.");
+      toast.error(error.message || t.errorMemory);
     },
   });
 
@@ -87,7 +105,7 @@ export default function Home() {
   const handleMemorySubmit = (e: React.FormEvent) => {
     e.preventDefault();
     if (!email) {
-      toast.error("Por favor, introduz o teu email.");
+      toast.error(t.pleaseEmail);
       return;
     }
     memoryMutation.mutate({ email, memory });
@@ -125,6 +143,34 @@ export default function Home() {
 
   return (
     <main className="min-h-screen w-full bg-gradient-to-b from-slate-950 via-purple-950 to-slate-950 relative overflow-hidden">
+      {/* Language Selector */}
+      <div className="fixed top-4 right-4 z-50 flex gap-2">
+        <Button
+          onClick={() => handleLanguageChange('pt')}
+          variant={language === 'pt' ? 'default' : 'outline'}
+          size="sm"
+          className={`${
+            language === 'pt'
+              ? 'bg-cyan-500 hover:bg-cyan-400 text-slate-950'
+              : 'border-cyan-500/50 text-cyan-300 hover:bg-cyan-500/10'
+          }`}
+        >
+          PT
+        </Button>
+        <Button
+          onClick={() => handleLanguageChange('en')}
+          variant={language === 'en' ? 'default' : 'outline'}
+          size="sm"
+          className={`${
+            language === 'en'
+              ? 'bg-cyan-500 hover:bg-cyan-400 text-slate-950'
+              : 'border-cyan-500/50 text-cyan-300 hover:bg-cyan-500/10'
+          }`}
+        >
+          EN
+        </Button>
+      </div>
+
       {/* Animated background orbs */}
       <div className="absolute top-20 left-10 w-72 h-72 bg-purple-600 rounded-full mix-blend-multiply filter blur-3xl opacity-20 animate-float"></div>
       <div className="absolute bottom-20 right-10 w-72 h-72 bg-cyan-600 rounded-full mix-blend-multiply filter blur-3xl opacity-20 animate-float" style={{ animationDelay: "2s" }}></div>
@@ -140,17 +186,17 @@ export default function Home() {
 
           {/* Main title with glow */}
           <h1 className="text-6xl md:text-8xl font-black mb-6 glow-cyan-lg animate-glow-pulse" style={{ letterSpacing: "-0.02em" }}>
-            Ecos da Alma
+            {t.heroTitle}
           </h1>
 
           {/* Subtitle */}
           <p className="text-xl md:text-2xl text-cyan-300 mb-8 font-light tracking-wide">
-            Uma jornada através de memórias, vulnerabilidade e esperança
+            {t.heroSubtitle}
           </p>
 
           {/* Slogan */}
           <p className="text-lg md:text-xl text-slate-300 mb-12 max-w-2xl mx-auto leading-relaxed">
-            Onde cada nota é um reflexo da alma, e cada canção, um eco das nossas memórias mais profundas
+            {t.heroSlogan}
           </p>
 
           {/* CTA Buttons */}
@@ -161,7 +207,7 @@ export default function Home() {
               onClick={() => document.getElementById("tracklist")?.scrollIntoView({ behavior: "smooth" })}
             >
               <Music className="mr-2 h-5 w-5" />
-              Ouve o Álbum
+              {t.listenAlbum}
             </Button>
             <Button
               size="lg"
@@ -170,7 +216,7 @@ export default function Home() {
               onClick={() => document.getElementById("meu-eco")?.scrollIntoView({ behavior: "smooth" })}
             >
               <Share2 className="mr-2 h-5 w-5" />
-              Partilha a Tua Memória
+              {t.shareMemory}
             </Button>
           </div>
 
@@ -196,7 +242,7 @@ export default function Home() {
       <section id="tracklist" className="relative z-10 py-20 px-4">
         <div className="max-w-3xl mx-auto">
           <h2 className="text-4xl md:text-5xl font-black mb-8 text-center glow-cyan">
-            Tracklist
+            {t.tracklist}
           </h2>
 
           {/* Main Audio Player */}
@@ -214,7 +260,7 @@ export default function Home() {
             </audio>
             {currentTrack !== null && (
               <p className="text-center text-cyan-300 mt-2">
-                Now Playing: {tracks[currentTrack].title}
+                {t.nowPlaying} {tracks[currentTrack].title}
               </p>
             )}
           </div>
@@ -272,25 +318,25 @@ export default function Home() {
       <section className="relative z-10 py-20 px-4 bg-slate-900/20">
         <div className="max-w-3xl mx-auto">
           <h2 className="text-4xl md:text-5xl font-black mb-12 text-center glow-cyan">
-            Sobre o Álbum
+            {t.aboutAlbum}
           </h2>
 
           <div className="space-y-6 text-slate-300 leading-relaxed">
             <p>
-              <strong className="text-cyan-300">"Ecos da Alma"</strong> é um álbum que nasce da profundidade das memórias pessoais e das emoções universais que nos definem como seres humanos. Cada faixa é um reflexo de experiências reais, transformadas em narrativas musicais que convidam o ouvinte a uma jornada introspectiva.
+              <strong className="text-cyan-300">"Ecos da Alma"</strong> {t.aboutText1}
             </p>
 
             <p>
-              O projeto une a nostalgia de memórias afetivas à sonoridade contemporânea, criando um espaço onde a vulnerabilidade se transforma em força. As composições exploram temas de esperança, resiliência e a busca pela autenticidade, oferecendo um refúgio sonoro para quem procura significado nas suas próprias experiências.
+              {t.aboutText2}
             </p>
 
             <p>
-              Com uma produção que equilibra o clássico e o moderno, <strong className="text-cyan-300">"Ecos da Alma"</strong> pretende ser mais do que um álbum—é uma experiência que ressoa com a essência do que somos, deixando ecos que perduram muito além da última nota.
+              {t.aboutText3}
             </p>
           </div>
 
           {/* Approved memories showcase */}
-          <ApprovedMemoriesSection />
+          <ApprovedMemoriesSection language={language} />
         </div>
       </section>
 
@@ -381,23 +427,23 @@ export default function Home() {
       <section id="meu-eco" className="relative z-10 py-20 px-4">
         <div className="max-w-3xl mx-auto">
           <h2 className="text-4xl md:text-5xl font-black mb-4 text-center glow-cyan">
-            #MeuEco
+            {t.myEcho}
           </h2>
           <p className="text-center text-slate-300 mb-12 text-lg">
-            Partilha a tua memória e faz parte desta comunidade de almas conectadas
+            {t.shareYourMemory}
           </p>
 
           <form onSubmit={handleMemorySubmit} className="space-y-4">
             <div>
               <label htmlFor="memory-email" className="block text-sm font-medium text-cyan-300 mb-2">
-                Email
+                {t.email}
               </label>
               <input
                 id="memory-email"
                 type="email"
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
-                placeholder="O teu email"
+                placeholder={t.yourEmail}
                 className="w-full p-4 rounded-lg bg-slate-900/50 border border-cyan-500/30 text-slate-100 placeholder-slate-500 focus:border-cyan-500 focus:outline-none focus:ring-2 focus:ring-cyan-500/20 transition-all duration-300"
                 required
                 disabled={memoryMutation.isPending}
@@ -406,13 +452,13 @@ export default function Home() {
             </div>
             <div>
               <label htmlFor="memory-text" className="block text-sm font-medium text-cyan-300 mb-2">
-                A Tua Memória
+                {t.yourMemory}
               </label>
               <textarea
                 id="memory-text"
                 value={memory}
                 onChange={(e) => setMemory(e.target.value)}
-                placeholder="Que memória ressoa contigo? Partilha a tua história..."
+                placeholder={t.memoryPlaceholder}
                 className="w-full p-4 rounded-lg bg-slate-900/50 border border-cyan-500/30 text-slate-100 placeholder-slate-500 focus:border-cyan-500 focus:outline-none focus:ring-2 focus:ring-cyan-500/20 transition-all duration-300 resize-none"
                 rows={5}
                 required
@@ -425,12 +471,12 @@ export default function Home() {
               className="w-full bg-cyan-500 hover:bg-cyan-400 text-slate-950 font-bold"
               disabled={memoryMutation.isPending}
             >
-              {memoryMutation.isPending ? "A enviar..." : "Partilhar Memória"}
+              {memoryMutation.isPending ? t.sending : t.shareButton}
             </Button>
           </form>
 
           <p className="text-center text-slate-400 text-sm mt-8">
-            Usa a hashtag <strong className="text-cyan-300">#MeuEco</strong> nas redes sociais para partilhares a tua história
+            {t.hashtag}
           </p>
         </div>
       </section>
@@ -439,22 +485,22 @@ export default function Home() {
       <section className="relative z-10 py-20 px-4 bg-slate-900/20">
         <div className="max-w-2xl mx-auto">
           <h2 className="text-3xl md:text-4xl font-black mb-6 text-center glow-cyan">
-            Subscreve a Newsletter
+            {t.newsletter}
           </h2>
           <p className="text-center text-slate-300 mb-8">
-            Recebe novidades, pré-saves exclusivos e histórias por trás do álbum
+            {t.newsletterDescription}
           </p>
 
           <form onSubmit={handleNewsletterSubmit} className="flex flex-col sm:flex-row gap-3">
             <label htmlFor="newsletter-email" className="sr-only">
-              Email para subscrição
+              {t.emailForNewsletter}
             </label>
             <input
               id="newsletter-email"
               type="email"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
-              placeholder="O teu email"
+              placeholder={t.emailForNewsletter}
               className="flex-1 px-4 py-3 rounded-lg bg-slate-900/50 border border-cyan-500/30 text-slate-100 placeholder-slate-500 focus:border-cyan-500 focus:outline-none focus:ring-2 focus:ring-cyan-500/20 transition-all duration-300"
               required
               disabled={newsletterMutation.isPending}
@@ -466,7 +512,7 @@ export default function Home() {
               disabled={newsletterMutation.isPending || submitted}
             >
               <Mail className="mr-2 h-4 w-4" />
-              {newsletterMutation.isPending ? "A enviar..." : submitted ? "Subscrito!" : "Subscrever"}
+              {newsletterMutation.isPending ? t.subscribeButtonSending : submitted ? t.subscribeButtonSuccess : t.subscribe}
             </Button>
           </form>
         </div>
@@ -479,22 +525,22 @@ export default function Home() {
             {/* Brand */}
             <div>
               <h3 className="text-2xl font-black glow-cyan mb-2">Ecos da Alma</h3>
-              <p className="text-slate-400 text-sm">Uma jornada através de memórias e esperança</p>
+              <p className="text-slate-400 text-sm">{t.journeyThroughMemories}</p>
             </div>
 
             {/* Quick Links */}
             <div>
-              <h4 className="font-bold text-cyan-300 mb-4">Links Rápidos</h4>
+              <h4 className="font-bold text-cyan-300 mb-4">{t.quickLinks}</h4>
               <ul className="space-y-2 text-sm text-slate-400">
-                <li><a href="#tracklist" className="hover:text-cyan-300 transition-colors">Tracklist</a></li>
-                <li><a href="#meu-eco" className="hover:text-cyan-300 transition-colors">#MeuEco</a></li>
-                <li><a href="#" className="hover:text-cyan-300 transition-colors">Sobre</a></li>
+                <li><a href="#tracklist" className="hover:text-cyan-300 transition-colors">{t.tracklist}</a></li>
+                <li><a href="#meu-eco" className="hover:text-cyan-300 transition-colors">{t.myEcho}</a></li>
+                <li><a href="#" className="hover:text-cyan-300 transition-colors">{t.aboutLink}</a></li>
               </ul>
             </div>
 
             {/* Social */}
             <div>
-              <h4 className="font-bold text-cyan-300 mb-4">Redes Sociais</h4>
+              <h4 className="font-bold text-cyan-300 mb-4">{t.socialNetworks}</h4>
               <ul className="space-y-2 text-sm text-slate-400">
                 <li><a href="https://instagram.com" target="_blank" rel="noopener noreferrer" className="hover:text-cyan-300 transition-colors">Instagram</a></li>
                 <li><a href="https://twitter.com" target="_blank" rel="noopener noreferrer" className="hover:text-cyan-300 transition-colors">Twitter</a></li>
@@ -505,7 +551,7 @@ export default function Home() {
 
           <div className="border-t border-slate-800 pt-8">
             <p className="text-center text-slate-500 text-sm">
-              © 2026 Ecos da Alma. Todos os direitos reservados. | Contacto: info@ecosdaalma.com
+              {t.copyright}
             </p>
           </div>
         </div>
