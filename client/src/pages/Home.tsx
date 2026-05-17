@@ -1,5 +1,6 @@
 import { Button } from "@/components/ui/button";
-import { Mail, Music, Share2, Play, Pause, Globe } from "lucide-react";
+import { Mail, Music, Share2, Play, Pause, Globe, Mic2 } from "lucide-react";
+import { Karaoke } from "@/components/Karaoke";
 import { useState, useRef, useEffect } from "react";
 import { trpc } from "@/lib/trpc";
 import { toast } from "sonner";
@@ -58,6 +59,8 @@ export default function Home() {
   const [currentTrack, setCurrentTrack] = useState<number | null>(null);
   const [isPlaying, setIsPlaying] = useState(false);
   const [language, setLanguage] = useState<Language>('pt');
+  const [currentTime, setCurrentTime] = useState(0);
+  const [showKaraoke, setShowKaraoke] = useState(false);
   const audioRef = useRef<HTMLAudioElement>(null);
   const t = translations[language];
 
@@ -255,13 +258,34 @@ export default function Home() {
               onEnded={handleAudioEnded}
               onPlay={() => setIsPlaying(true)}
               onPause={() => setIsPlaying(false)}
+              onTimeUpdate={(e) => setCurrentTime(e.currentTarget.currentTime)}
             >
               Your browser does not support the audio element.
             </audio>
+            <div className="flex flex-col items-center mt-4">
+              {currentTrack !== null && (
+                <p className="text-center text-cyan-300 mb-2">
+                  {t.nowPlaying} {tracks[currentTrack].title}
+                </p>
+              )}
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={() => setShowKaraoke(!showKaraoke)}
+                className={`border-cyan-500/50 text-cyan-300 hover:bg-cyan-500/10 ${showKaraoke ? 'bg-cyan-500/20' : ''}`}
+              >
+                <Mic2 className="mr-2 h-4 w-4" />
+                {showKaraoke ? t.hideKaraoke : t.showKaraoke}
+              </Button>
+            </div>
+
             {currentTrack !== null && (
-              <p className="text-center text-cyan-300 mt-2">
-                {t.nowPlaying} {tracks[currentTrack].title}
-              </p>
+              <Karaoke
+                songName={tracks[currentTrack].filename.replace('.mp3', '')}
+                currentTime={currentTime}
+                language={language}
+                isVisible={showKaraoke}
+              />
             )}
           </div>
 

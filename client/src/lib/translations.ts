@@ -12,6 +12,8 @@ export const translations = {
     // Tracklist
     tracklist: 'Tracklist',
     nowPlaying: 'Now Playing:',
+    showKaraoke: 'Mostrar Letra',
+    hideKaraoke: 'Ocultar Letra',
 
     // About Section
     aboutAlbum: 'Sobre o Álbum',
@@ -63,6 +65,8 @@ export const translations = {
     // Tracklist
     tracklist: 'Tracklist',
     nowPlaying: 'Now Playing:',
+    showKaraoke: 'Show Lyrics',
+    hideKaraoke: 'Hide Lyrics',
 
     // About Section
     aboutAlbum: 'About the Album',
